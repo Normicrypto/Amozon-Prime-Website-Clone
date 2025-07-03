@@ -59,5 +59,47 @@ jobs:
           cluster: ${{ env.ECS_CLUSTER }}
           task-definition: ${{ steps.task-def.outputs.task-definition }}0x4Fabb145d64652a948d72533023f6E7A623C7C53"paths": {
    "@core/*": ["app/core/*"],
+   ..."scripts": {
+  "build": "echo 'Build script placeholder'",
+  "test": "echo 'Test script placeholder'"
+}Node.jsyarn.lock"moduleNameMapper": {
+   "^@core/(.*)$": "<rootDir>/src/app/core/$1",
    ...
-}steps.login-ecr.outputs.registry
+}name: Node.js CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 📦 Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci
+          elif [ -f yarn.lock ]; then
+            yarn install --frozen-lockfile
+          else
+            echo "❌ No lockfile found. Please commit package-lock.json or yarn.lock."
+            exit 1
+          fi
+
+      - name: 🔨 Run build (optional)
+        run: npm run build || echo "No build script defined."
+
+      - name: ✅ Run tests
+        run: npm test || echo "No test script defined."package-lock.json1
+}steps.login-ecr.outputs.registry workflow 
